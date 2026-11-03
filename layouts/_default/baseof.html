@@ -28,6 +28,7 @@
     {{- $bundleCss := $styles | resources.Concat "css/bundle.css" | minify | fingerprint -}}
     <link rel="stylesheet" href="{{ $bundleCss.RelPermalink }}" integrity="{{ $bundleCss.Data.Integrity }}">
     <link rel="stylesheet" href="{{ "css/glass.css" | relURL }}?v=2">
+    <link rel="stylesheet" href="{{ "css/hearts.css" | relURL }}?v=1">
 
     {{- /* 把所有 JS 打包到一起 */ -}}
     {{- $scripts := slice (resources.Get "js/message.min.js") (resources.Get "js/main.js") -}}
@@ -151,5 +152,7 @@
             </nav>
         </div>
     </div>
+    <script>window.__WALINE_SERVER__ = "{{ .Site.Params.walineServer }}";</script>
+    <script src="{{ "js/hearts.js" | relURL }}?v=1" defer></script>
 </body>
 </html>

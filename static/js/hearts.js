@@ -1,0 +1,155 @@
+/* tian hearts — 点击首页头像点亮爱心
+ * - 点击 .header-avatar（或爱心小药丸）不再切换深浅色（导航栏还有专门的切换按钮），
+ *   改为：大爱心弹出 + 小爱心上飘动画，并在 Waline 后端记一颗心。
+ * - 计数与文章点赞同一套 Waline article 接口（type=reaction0，按页面路径区分），
+ *   每位访客记一颗，再点一次取消；状态存 localStorage，与 Waline 官方行为一致。
+ */
+(function () {
+    'use strict';
+
+    var server = (window.__WALINE_SERVER__ || '').replace(/\/+$/, '');
+    if (!server) return;
+
+    var path = window.location.pathname;
+    var storeKey = 'tianHearts:' + path;
+    var apiBase = server + '/api/article';
+    var busy = false;
+
+    function hasVoted() {
+        try { return window.localStorage.getItem(storeKey) === '1'; }
+        catch (e) { return false; }
+    }
+
+    function setVoted(v) {
+        try {
+            if (v) window.localStorage.setItem(storeKey, '1');
+            else window.localStorage.removeItem(storeKey);
+        } catch (e) { /* 隐私模式下记不住状态，计数仍以服务端为准 */ }
+    }
+
+    function fetchCount() {
+        return fetch(apiBase + '?path=' + encodeURIComponent(path) + '&type=reaction0')
+            .then(function (r) { return r.json(); })
+            .then(function (j) {
+                if (j && j.errno === 0 && j.data && j.data[0]) return j.data[0].reaction0 || 0;
+                throw new Error('bad response');
+            });
+    }
+
+    function vote(action) {
+        return fetch(apiBase, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: path, type: 'reaction0', action: action })
+        }).then(function (r) { return r.json(); })
+          .then(function (j) {
+              if (!j || j.errno !== 0) throw new Error('vote failed');
+              return (j.data && j.data[0] && j.data[0].reaction0) || 0;
+          });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var avatar = document.querySelector('.header-avatar');
+        var info = document.querySelector('.header-info');
+        var header = document.querySelector('.moments-header');
+        if (!avatar || !info || !header) return;
+
+        /* 动画层 */
+        var layer = document.createElement('div');
+        layer.className = 'heart-layer';
+        header.appendChild(layer);
+
+        /* 计数小药丸，挂在名字下方 */
+        var pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'heart-pill';
+        pill.setAttribute('aria-label', '给博主点一颗爱心');
+        pill.innerHTML = '<span class="heart-pill-icon">❤️</span>' +
+                         '<span class="heart-pill-count">–</span>';
+        info.appendChild(pill);
+        var countEl = pill.querySelector('.heart-pill-count');
+
+        function render(count) {
+            countEl.textContent = String(count);
+            pill.classList.toggle('voted', hasVoted());
+        }
+
+        fetchCount().then(render).catch(function () { render(0); });
+
+        function avatarCenter() {
+            var hr = header.getBoundingClientRect();
+            var ar = avatar.getBoundingClientRect();
+            return {
+                x: ar.left - hr.left + ar.width / 2,
+                y: ar.top - hr.top + ar.height / 2
+            };
+        }
+
+        function spawn(el, x, y) {
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            layer.appendChild(el);
+            el.addEventListener('animationend', function () { el.remove(); });
+        }
+
+        function celebrate() {
+            var c = avatarCenter();
+            var big = document.createElement('span');
+            big.className = 'heart-big';
+            big.textContent = '❤️';
+            spawn(big, c.x, c.y);
+            for (var i = 0; i < 6; i++) {
+                var mini = document.createElement('span');
+                mini.className = 'heart-mini';
+                mini.textContent = '❤️';
+                var size = 11 + Math.random() * 10;
+                mini.style.fontSize = size.toFixed(0) + 'px';
+                mini.style.setProperty('--dx', (Math.random() * 56 - 28).toFixed(0) + 'px');
+                mini.style.setProperty('--rot', (Math.random() * 56 - 28).toFixed(0) + 'deg');
+                mini.style.animationDelay = (Math.random() * 0.18).toFixed(2) + 's';
+                spawn(mini, c.x + (Math.random() * 30 - 15), c.y + (Math.random() * 16 - 8));
+            }
+        }
+
+        function farewell() {
+            var c = avatarCenter();
+            var big = document.createElement('span');
+            big.className = 'heart-big bye';
+            big.textContent = '❤️';
+            spawn(big, c.x, c.y);
+        }
+
+        function pulse() {
+            countEl.classList.remove('pulse');
+            void countEl.offsetWidth;
+            countEl.classList.add('pulse');
+        }
+
+        function onHeartClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (busy) return;
+            busy = true;
+            var voted = hasVoted();
+            var prev = parseInt(countEl.textContent, 10);
+            if (isNaN(prev)) prev = 0;
+            /* 先给动画和乐观计数，请求失败再回滚 */
+            if (voted) { farewell(); render(Math.max(prev - 1, 0)); }
+            else { celebrate(); render(prev + 1); }
+            pulse();
+            vote(voted ? 'desc' : 'inc').then(function (serverCount) {
+                setVoted(!voted);
+                render(serverCount);
+            }).catch(function () {
+                render(prev);
+            }).then(function () { busy = false; });
+        }
+
+        /* 捕获阶段拦截：赶在主题「点头像切深浅色」的监听之前接管这次点击 */
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.header-avatar') || e.target.closest('.heart-pill')) {
+                onHeartClick(e);
+            }
+        }, true);
+    });
+})();

@@ -15,6 +15,8 @@
 - 💬 **Waline 评论（自托管）**：客户端文件随主题本地托管、**不依赖任何外部 CDN**；访客填昵称即可评论，无需注册；
 - 🛡️ **Turnstile 人机验证**：验证码组件直接嵌在评论编辑器内，无 token 的提交会被服务端拒绝，挡机器人效果明显；
 - 👍 **点赞按钮**：文章页带 Waline reaction 点赞（本地爱心图标）；
+- ❤️ **头像爱心**：点击首页封面头像不再切换深浅色（顶栏有专门的切换按钮），改为弹出大爱心 + 小爱心上飘动画，名字下方还有一颗玻璃小药丸显示爱心总数；计数复用 Waline 的 article 接口（`reaction0`，按页面路径区分），每位访客一颗、再点取消，逻辑在 `static/js/hearts.js`；该功能依赖站点参数 `walineServer`，未配置 Waline 时自动不启用；
+- 🔗 **页脚署名**：页脚的主题名链接指向本仓库，访客可以顺着找到主题出处；
 - 🧩 **评论开关规则**：文章默认开启评论；独立页面（如「关于」）在 front matter 写 `comments: true` 单独开启，写 `comments: false` 可关掉某篇文章的评论；
 - 🚫 **默认关闭 PJAX**：评论组件在 PJAX 下容易重复初始化，本主题的实站选择是关掉 PJAX 换评论稳定（配置见下文）。
 
@@ -128,8 +130,9 @@ hugo --minify
 
 ## 目录速览
 
-- `layouts/` — 在 Amigo 布局基础上改了两处：`_default/baseof.html`（挂载 glass.css）、`_default/single.html`（注入 Waline 评论）；评论组件在 `layouts/partials/comments.html`，服务器地址与 Turnstile 密钥都从站点参数读取；
+- `layouts/` — 在 Amigo 布局基础上改了两处：`_default/baseof.html`（挂载 glass.css、hearts.css 与爱心脚本，并注入 Waline 服务器地址）、`_default/single.html`（注入 Waline 评论）；评论组件在 `layouts/partials/comments.html`，服务器地址与 Turnstile 密钥都从站点参数读取；页脚署名在 `layouts/partials/footer.html`；
 - `static/css/glass.css` — 全部毛玻璃皮肤，想微调颜色 / 透明度改这一个文件；
+- `static/css/hearts.css` + `static/js/hearts.js` — 首页点头像的爱心动画与计数（依赖 Waline 的 article 接口）；
 - `static/waline/` — Waline 官方客户端（@waline/client 3.16.2）本地托管；
 - `hugo.toml` — 带中文注释的配置模板；
 - `exampleSite/` — 示例内容。
