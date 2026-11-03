@@ -1,0 +1,21 @@
+<!-- Waline 评论区：需要自托管 Waline 服务端，客户端文件随主题本地托管于 /waline/ -->
+<link rel="stylesheet" href="/waline/waline.css" />
+<div id="waline"></div>
+<script type="module">
+import { init } from '/waline/waline.js';
+
+init({
+  el: '#waline',
+  serverURL: {{ .Site.Params.walineServer | jsonify | safeJS }},
+  path: {{ .RelPermalink | jsonify | safeJS }},
+  lang: 'zh-CN',
+  dark: 'auto',
+  imageUploader: false,
+  {{ with .Site.Params.walineTurnstileKey }}turnstileKey: {{ . | jsonify | safeJS }},
+  {{ end }}reaction: ['/waline/like.svg'],
+  locale: {
+    reactionTitle: '觉得不错，点个赞吧',
+    reaction0: '点赞',
+  },
+});
+</script>

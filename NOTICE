@@ -1,0 +1,18 @@
+# 第三方来源说明 / Third-party notices
+
+本主题（tian）是以下开源项目的衍生与组合，特此致谢：
+
+- **Amigo** — 朋友圈风格 Hugo 主题，本主题的底座（布局、动态流、多图/音乐/视频/语音等功能均来自它）。
+  上游仓库：https://github.com/zqlit/Hugo-Theme-Amigo （MIT License）
+  本主题的改动集中在：毛玻璃皮肤（static/css/glass.css）、Waline 评论集成
+  （layouts/partials/comments.html 及 single.html 的评论注入）、baseof 的样式挂载。
+
+- **Waline** — 评论系统。static/waline/ 下的 waline.js / waline.css / like.svg
+  为 @waline/client 3.16.2 的官方构建文件，随主题本地托管、不走外部 CDN。
+  项目地址：https://github.com/walinejs/waline （MIT License）
+
+- **Remix Icon** — 图标字体（assets/css/remixicon.css 及其字体文件）。
+  项目地址：https://github.com/Remix-Design/RemixIcon
+
+- 主题自带的示例字体（平方桥木体、阿里妈妈方圆体、站酷快乐体）版权归各自作者所有，
+  仅作演示；可通过 fontFamily 参数切换或改用系统字体。

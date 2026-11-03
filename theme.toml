@@ -1,0 +1,17 @@
+name = "tian"
+license = "MIT"
+licenselink = "https://github.com/xiaochen-G/hugo-theme-tian/blob/main/LICENSE"
+description = "朋友圈风 Hugo 主题的毛玻璃改版：Apple-glass 皮肤 + 自托管 Waline 评论（内置 Turnstile 人机验证与点赞），由 Sigu 博客实站打磨而来。"
+homepage = "https://github.com/xiaochen-G/hugo-theme-tian"
+demosite = "https://blog.bke.us.ci"
+tags = ["blog", "moments", "glassmorphism", "waline", "dark-mode"]
+features = ["朋友圈动态流", "毛玻璃皮肤", "Waline 评论", "深色模式", "多图九宫格", "音乐/视频/语音"]
+
+[author]
+    name = "Dario"
+    homepage = "https://blog.bke.us.ci"
+
+[original]
+    name = "Amigo"
+    homepage = "https://github.com/zqlit/Hugo-Theme-Amigo"
+    repo = "https://github.com/zqlit/Hugo-Theme-Amigo"
