@@ -27,13 +27,32 @@
         } catch (e) { /* 隐私模式下记不住状态，计数仍以服务端为准 */ }
     }
 
+    /* 超时用 Promise.race 实现：不用 AbortController——小米自带浏览器等老内核没有这个 API，
+       一旦抛错会把同一回调里后面的点击监听注册也带崩（2026-11-04 实测回归） */
+    function fetchWithTimeout(url, options, ms) {
+        var timeout = new Promise(function (resolve, reject) {
+            setTimeout(function () { reject(new Error('timeout')); }, ms);
+        });
+        return Promise.race([fetch(url, options || {}), timeout]);
+    }
+
     function fetchCount() {
-        return fetch(apiBase + '?path=' + encodeURIComponent(path) + '&type=reaction0')
+        return fetchWithTimeout(apiBase + '?path=' + encodeURIComponent(path) + '&type=reaction0', null, 6000)
             .then(function (r) { return r.json(); })
             .then(function (j) {
                 if (j && j.errno === 0 && j.data && j.data[0]) return j.data[0].reaction0 || 0;
                 throw new Error('bad response');
             });
+    }
+
+    /* 慢网络下失败很常见（小米浏览器实测）：自动重试一次；
+       两次都失败就保留占位符，绝不显示假的 0 */
+    function loadCount() {
+        fetchCount().then(render).catch(function () {
+            setTimeout(function () {
+                fetchCount().then(render).catch(function () { /* 保持 – */ });
+            }, 1500);
+        });
     }
 
     function vote(action) {
@@ -73,8 +92,6 @@
             countEl.textContent = String(count);
             pill.classList.toggle('voted', hasVoted());
         }
-
-        fetchCount().then(render).catch(function () { render(0); });
 
         function avatarCenter() {
             var hr = header.getBoundingClientRect();
@@ -145,11 +162,29 @@
             }).then(function () { busy = false; });
         }
 
-        /* 捕获阶段拦截：赶在主题「点头像切深浅色」的监听之前接管这次点击 */
+        /* 头像图片禁止拖拽，减少某些手机浏览器（小米 XWeb 等）对图片的接管菜单 */
+        var avatarImg = avatar.querySelector('img');
+        if (avatarImg) avatarImg.setAttribute('draggable', 'false');
+
+        /* 捕获阶段拦截：赶在主题「点头像切深浅色」的监听之前接管这次点击。
+           触摸设备先在 touchend 接管并 preventDefault（压掉后续合成 click），
+           再用时间戳守卫防止 click 重复触发导致一次点按被处理两遍。 */
+        var lastTouchHandled = 0;
+        document.addEventListener('touchend', function (e) {
+            if (e.target.closest('.header-avatar') || e.target.closest('.heart-pill')) {
+                e.preventDefault();
+                lastTouchHandled = Date.now();
+                onHeartClick(e);
+            }
+        }, { capture: true, passive: false });
         document.addEventListener('click', function (e) {
+            if (Date.now() - lastTouchHandled < 700) return;
             if (e.target.closest('.header-avatar') || e.target.closest('.heart-pill')) {
                 onHeartClick(e);
             }
         }, true);
+
+        /* 计数加载放最后：就算它出任何差错，也不能影响上面的点击接管 */
+        try { loadCount(); } catch (err) { /* 保持占位符 */ }
     });
 })();

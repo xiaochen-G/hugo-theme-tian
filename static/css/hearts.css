@@ -5,6 +5,18 @@
     position: relative;
 }
 
+/* 头像：禁止长按弹出系统菜单 / 图片接管（小米等自带浏览器），点按只走爱心逻辑 */
+.header-avatar {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+.header-avatar img {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
 /* 爱心计数小药丸：挂在名字下方，与全站毛玻璃同一套语言 */
 .heart-pill {
     display: inline-flex;

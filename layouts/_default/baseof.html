@@ -28,7 +28,7 @@
     {{- $bundleCss := $styles | resources.Concat "css/bundle.css" | minify | fingerprint -}}
     <link rel="stylesheet" href="{{ $bundleCss.RelPermalink }}" integrity="{{ $bundleCss.Data.Integrity }}">
     <link rel="stylesheet" href="{{ "css/glass.css" | relURL }}?v=2">
-    <link rel="stylesheet" href="{{ "css/hearts.css" | relURL }}?v=1">
+    <link rel="stylesheet" href="{{ "css/hearts.css" | relURL }}?v=2">
     <link rel="stylesheet" href="{{ "css/wide.css" | relURL }}?v=2">
 
     {{- /* 把所有 JS 打包到一起 */ -}}
@@ -70,7 +70,10 @@
             twikooLang: "{{ .Site.Params.twikooLang | default "zh-CN" }}",
             enableDanmaku: {{ if eq .Site.Params.enableDanmaku false }}false{{ else }}true{{ end }},
             headerMediaList: {{ with .Site.Params.headerMediaList }}{{ . | jsonify }}{{ else }}[]{{ end }},
-            headerMedia: "{{ .Site.Params.headerMedia | default .Site.Params.cover }}"
+            // 故意留空：Amigo 的 initHeaderMedia 会拿封面图地址生成同名 .mp4 的「Live Photo」视频元素，
+            // 封面没有配套视频时那是个 404 视频，会被小米等自带浏览器接管成全屏播放器（真实机型实测）。
+            // 若想用 Live Photo 封面：把下一行改回 "{{ "{{" }} .Site.Params.headerMedia | default .Site.Params.cover }}" 并在封面图旁放好同名 .mp4。
+            headerMedia: ""
         };
     </script>
 
@@ -154,7 +157,7 @@
         </div>
     </div>
     <script>window.__WALINE_SERVER__ = "{{ .Site.Params.walineServer }}";</script>
-    <script src="{{ "js/hearts.js" | relURL }}?v=1" defer></script>
+    <script src="{{ "js/hearts.js" | relURL }}?v=2" defer></script>
     <script src="{{ "js/sidepanels.js" | relURL }}?v=2" defer></script>
 </body>
 </html>
