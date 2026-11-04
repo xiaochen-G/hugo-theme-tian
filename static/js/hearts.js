@@ -12,8 +12,24 @@
 
     var path = window.location.pathname;
     var storeKey = 'tianHearts:' + path;
+    var cacheKey = 'tianHeartsCount:' + path;
     var apiBase = server + '/api/article';
     var busy = false;
+    var countLoading = false;
+
+    /* 上次成功拿到的计数先存在本地：慢网络时药丸先显示这个数，不再干等 */
+    function getCachedCount() {
+        try {
+            var v = window.localStorage.getItem(cacheKey);
+            if (v === null) return null;
+            var n = parseInt(v, 10);
+            return isNaN(n) ? null : n;
+        } catch (e) { return null; }
+    }
+
+    function setCachedCount(n) {
+        try { window.localStorage.setItem(cacheKey, String(n)); } catch (e) { /* 记不住就算了 */ }
+    }
 
     function hasVoted() {
         try { return window.localStorage.getItem(storeKey) === '1'; }
@@ -37,7 +53,7 @@
     }
 
     function fetchCount() {
-        return fetchWithTimeout(apiBase + '?path=' + encodeURIComponent(path) + '&type=reaction0', null, 6000)
+        return fetchWithTimeout(apiBase + '?path=' + encodeURIComponent(path) + '&type=reaction0', null, 10000)
             .then(function (r) { return r.json(); })
             .then(function (j) {
                 if (j && j.errno === 0 && j.data && j.data[0]) return j.data[0].reaction0 || 0;
@@ -45,22 +61,46 @@
             });
     }
 
-    /* 慢网络下失败很常见（小米浏览器实测）：自动重试一次；
-       两次都失败就保留占位符，绝不显示假的 0 */
+    /* 药丸元素在 DOMContentLoaded 里创建后挂到这两个外层变量上，
+       render 必须定义在外层：loadCount 也在外层调用它（曾因作用域写错导致计数永远加载不出来） */
+    var pillEl = null;
+    var countEl = null;
+
+    function render(count) {
+        setCachedCount(count);
+        if (!countEl) return;
+        countEl.textContent = String(count);
+        if (pillEl) pillEl.classList.toggle('voted', hasVoted());
+    }
+
+    /* 慢网络下失败很常见（机主实测：挂 VPN 时只有几 KB/s，计数接口屡屡超时）：
+       放宽单次超时到 10s，再按 2s / 5s / 10s 间隔耐心重试，共 4 次；
+       全部失败就保留上次缓存或占位符，绝不显示假的 0 */
     function loadCount() {
-        fetchCount().then(render).catch(function () {
-            setTimeout(function () {
-                fetchCount().then(render).catch(function () { /* 保持 – */ });
-            }, 1500);
-        });
+        if (countLoading) return;
+        countLoading = true;
+        var delays = [2000, 5000, 10000];
+        var attempt = function (i) {
+            fetchCount().then(function (count) {
+                countLoading = false;
+                render(count);
+            }).catch(function () {
+                if (i < delays.length) {
+                    setTimeout(function () { attempt(i + 1); }, delays[i]);
+                } else {
+                    countLoading = false; /* 保持现状，等下次页面可见时再试 */
+                }
+            });
+        };
+        attempt(0);
     }
 
     function vote(action) {
-        return fetch(apiBase, {
+        return fetchWithTimeout(apiBase, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: path, type: 'reaction0', action: action })
-        }).then(function (r) { return r.json(); })
+        }, 10000).then(function (r) { return r.json(); })
           .then(function (j) {
               if (!j || j.errno !== 0) throw new Error('vote failed');
               return (j.data && j.data[0] && j.data[0].reaction0) || 0;
@@ -86,12 +126,12 @@
         pill.innerHTML = '<span class="heart-pill-icon">❤️</span>' +
                          '<span class="heart-pill-count">–</span>';
         info.appendChild(pill);
-        var countEl = pill.querySelector('.heart-pill-count');
+        pillEl = pill;
+        countEl = pill.querySelector('.heart-pill-count');
 
-        function render(count) {
-            countEl.textContent = String(count);
-            pill.classList.toggle('voted', hasVoted());
-        }
+        /* 先把上次缓存的计数摆出来，再在后台刷新 */
+        var cached = getCachedCount();
+        if (cached !== null) render(cached);
 
         function avatarCenter() {
             var hr = header.getBoundingClientRect();
@@ -186,5 +226,10 @@
 
         /* 计数加载放最后：就算它出任何差错，也不能影响上面的点击接管 */
         try { loadCount(); } catch (err) { /* 保持占位符 */ }
+
+        /* 切后台又切回来时如果计数还没拿到，再补试一轮 */
+        document.addEventListener('visibilitychange', function () {
+            if (!document.hidden && countEl && countEl.textContent === '–') loadCount();
+        });
     });
 })();
