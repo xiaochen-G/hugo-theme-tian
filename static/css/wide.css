@@ -56,17 +56,25 @@
 }
 
 /* ---------- 两侧玻璃面板（仅主页、仅 ≥1440px 由 JS 注入并显示） ---------- */
-.side-panel {
+/* 结构：.side-stack 是固定定位的竖排容器，.side-panel 是里面的每张玻璃卡 */
+.side-stack, .side-panel {
     display: none;
 }
 @media (min-width: 1440px) {
-    .side-panel {
-        display: block;
+    .side-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
         position: fixed;
         top: 50%;
         transform: translateY(-50%);
         width: 216px;
         z-index: 40;
+    }
+    .side-stack-left  { left:  calc(50% - 676px); }  /* 440(半个主页)+20(间距)+216(面板宽) */
+    .side-stack-right { right: calc(50% - 676px); }
+    .side-panel {
+        display: block;
         padding: 20px 18px;
         background: rgba(255, 255, 255, .50);
         -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -76,12 +84,31 @@
         box-shadow: 0 8px 32px rgba(31, 38, 135, .08), inset 0 1px 0 rgba(255, 255, 255, .6);
         color: var(--text-main);
     }
-    .side-panel-left  { left:  calc(50% - 676px); }  /* 440(半个主页)+20(间距)+216(面板宽) */
-    .side-panel-right { right: calc(50% - 676px); }
 }
 @media (min-width: 1680px) {
-    .side-panel-left  { left:  calc(50% - 716px); }  /* 主页加宽到 960 后同步外移 */
-    .side-panel-right { right: calc(50% - 716px); }
+    .side-stack-left  { left:  calc(50% - 716px); }  /* 主页加宽到 960 后同步外移 */
+    .side-stack-right { right: calc(50% - 716px); }
+}
+
+/* 欢迎卡片（左栏第二张）：访客位置 / IP / 设备 */
+.side-panel .sp-whello {
+    font-size: 14.5px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+.side-panel .sp-wrow {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+.side-panel .sp-wrow .sp-wk {
+    flex-shrink: 0;
+    color: var(--text-desc, #666);
+}
+.side-panel .sp-wrow .sp-wv {
+    word-break: break-all;
 }
 
 .side-panel .sp-avatar {
