@@ -17,6 +17,7 @@
 - 👍 **点赞按钮**：文章页带 Waline reaction 点赞（本地爱心图标）；
 - ❤️ **头像爱心**：点击首页封面头像不再切换深浅色（顶栏有专门的切换按钮），改为弹出大爱心 + 小爱心上飘动画，名字下方还有一颗玻璃小药丸显示爱心总数；计数复用 Waline 的 article 接口（`reaction0`，按页面路径区分），每位访客一颗、再点取消，逻辑在 `static/js/hearts.js`；该功能依赖站点参数 `walineServer`，未配置 Waline 时自动不启用；
 - 🔗 **页脚署名**：页脚的主题名链接指向本仓库，访客可以顺着找到主题出处；
+- 🖥️ **宽屏适配与细节打磨**：主页在平板 / 电脑 / 大屏上分档加宽（800 / 880 / 960px，文章页保持原阅读宽度，手机端不变），封面高度随宽度增加；窗口 ≥1440px 时两侧空白处出现两块玻璃小面板——左侧博主名片（头像 / 简介 / 文章数），右侧站点导航 + 今日日期；全屏菜单的胶囊按钮改为等宽、文字居中，配图等小元素的圆角从 3~4px 统一到 10~12px；实现在 `static/css/wide.css` 与 `static/js/sidepanels.js`，导航链接可在脚本里改成自己的；
 - 🧩 **评论开关规则**：文章默认开启评论；独立页面（如「关于」）在 front matter 写 `comments: true` 单独开启，写 `comments: false` 可关掉某篇文章的评论；
 - 🚫 **默认关闭 PJAX**：评论组件在 PJAX 下容易重复初始化，本主题的实站选择是关掉 PJAX 换评论稳定（配置见下文）。
 
@@ -130,9 +131,10 @@ hugo --minify
 
 ## 目录速览
 
-- `layouts/` — 在 Amigo 布局基础上改了两处：`_default/baseof.html`（挂载 glass.css、hearts.css 与爱心脚本，并注入 Waline 服务器地址）、`_default/single.html`（注入 Waline 评论）；评论组件在 `layouts/partials/comments.html`，服务器地址与 Turnstile 密钥都从站点参数读取；页脚署名在 `layouts/partials/footer.html`；
+- `layouts/` — 在 Amigo 布局基础上改了两处：`_default/baseof.html`（挂载 glass.css、hearts.css、wide.css 与爱心、两侧面板脚本，并注入 Waline 服务器地址）、`_default/single.html`（注入 Waline 评论）；评论组件在 `layouts/partials/comments.html`，服务器地址与 Turnstile 密钥都从站点参数读取；页脚署名在 `layouts/partials/footer.html`；
 - `static/css/glass.css` — 全部毛玻璃皮肤，想微调颜色 / 透明度改这一个文件；
 - `static/css/hearts.css` + `static/js/hearts.js` — 首页点头像的爱心动画与计数（依赖 Waline 的 article 接口）；
+- `static/css/wide.css` + `static/js/sidepanels.js` — 宽屏加宽、两侧玻璃面板、菜单居中与圆角打磨；
 - `static/waline/` — Waline 官方客户端（@waline/client 3.16.2）本地托管；
 - `hugo.toml` — 带中文注释的配置模板；
 - `exampleSite/` — 示例内容。
