@@ -55,7 +55,7 @@
     .main-wrapper:has(.moments-feed) .moments-header { height: 330px; }
 }
 
-/* ---------- 两侧玻璃面板（仅主页、仅 ≥1440px 由 JS 注入并显示） ---------- */
+/* ---------- 两侧玻璃面板（主页与文章页、仅 ≥1440px 由 JS 注入并显示） ---------- */
 /* 结构：.side-stack 是固定定位的竖排容器，.side-panel 是里面的每张玻璃卡 */
 .side-stack, .side-panel {
     display: none;
@@ -88,6 +88,12 @@
 @media (min-width: 1680px) {
     .side-stack-left  { left:  calc(50% - 716px); }  /* 主页加宽到 960 后同步外移 */
     .side-stack-right { right: calc(50% - 716px); }
+}
+/* 文章页内容列维持 680px，面板按 680 算偏移（340+20+216=576），与屏幕宽度无关；
+   双类选择器优先级高于上面按主页宽度写的两组规则，1680 以上也不会被覆盖回去 */
+@media (min-width: 1440px) {
+    .side-stack-left.on-article  { left:  calc(50% - 576px); }
+    .side-stack-right.on-article { right: calc(50% - 576px); }
 }
 
 /* 欢迎卡片（左栏第二张）：访客位置 / IP / 设备 */

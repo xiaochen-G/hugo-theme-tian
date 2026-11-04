@@ -1,13 +1,15 @@
-/* tian side panels — 宽屏（≥1440px）时在主页两侧空白处放玻璃小面板：
+/* tian side panels — 宽屏（≥1440px）时在内容列两侧空白处放玻璃小面板：
  * 左栏上：博主小名片（头像 / 名字 / 简介 / 文章数 / 照片数）
  * 左栏下：访客欢迎卡片（访客自己的位置 / IP / 设备，多源兜底，国内外都能直连）
  * 右栏：本站导航（首页 / 文章 / 关于 / RSS）+ 今日日期
- * 只在主页（有 .moments-feed）注入；显隐与定位全部由 wide.css 的媒体查询控制，
+ * 主页（有 .moments-feed）和文章页（有 .article-text）都注入；显隐与定位全部
+ * 由 wide.css 的媒体查询控制（文章页列宽不同，定位走 .on-article），
  * 平板与手机端不会出现。导航想换成自己的外部链接，改下面 links 数组即可。 */
 (function () {
     'use strict';
 
-    if (!document.querySelector('.moments-feed')) return;
+    var isHome = !!document.querySelector('.moments-feed');
+    if (!isHome && !document.querySelector('.article-text')) return;
     if (document.querySelector('.side-stack')) return;
 
     function el(tag, cls, text) {
@@ -37,9 +39,13 @@
     }
 
     var stats = el('div', 'sp-stats');
-    var postCount = document.querySelectorAll('.moment-card').length;
+    /* 主页数朋友圈卡片；文章页没有卡片可数，用 baseof 注入的全站文章数。
+       照片数只能在主页数，文章页为 0 时不显示这一格 */
+    var postCount = document.querySelectorAll('.moment-card').length || window.__POST_COUNT__ || 0;
     var photoCount = document.querySelectorAll('.moment-gallery img').length;
-    [[postCount, '篇文章'], [photoCount, '张照片']].forEach(function (pair) {
+    var pairs = [[postCount, '篇文章']];
+    if (photoCount > 0) pairs.push([photoCount, '张照片']);
+    pairs.forEach(function (pair) {
         var cell = el('div');
         cell.appendChild(el('b', null, String(pair[0])));
         cell.appendChild(el('span', null, pair[1]));
@@ -159,6 +165,11 @@
     stackL.appendChild(welcome);
     var stackR = el('div', 'side-stack side-stack-right');
     stackR.appendChild(right);
+    if (!isHome) {
+        /* 文章页内容列只有 680px，定位偏移与主页不同，交给 wide.css 的 .on-article 规则 */
+        stackL.className += ' on-article';
+        stackR.className += ' on-article';
+    }
     document.body.appendChild(stackL);
     document.body.appendChild(stackR);
 })();
