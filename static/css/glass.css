@@ -60,6 +60,8 @@ body::before {
 }
 .header-name { text-shadow: 0 1px 3px rgba(30, 27, 75, .55), 0 0 14px rgba(30, 27, 75, .28); }
 
+
+
 /* ---------- 个性签名：玻璃胶囊 ---------- */
 .header-signature {
     margin: 14px 20px 6px;
@@ -92,16 +94,36 @@ body::before {
     border-radius: 50%;
 }
 
-/* ---------- 全屏菜单：链接变玻璃胶囊 ---------- */
+/* ---------- 全屏菜单：去掉原主题的黑色罩，换成与全站一致的粉蓝毛玻璃 ---------- */
+#menu-overlay {
+    background: linear-gradient(155deg, rgba(219, 240, 254, .80), rgba(252, 231, 243, .74) 52%, rgba(233, 238, 255, .84));
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    backdrop-filter: blur(24px) saturate(160%);
+}
 #menu-overlay .menu-link {
     display: inline-block;
     padding: 10px 26px;
-    background: rgba(255, 255, 255, .16);
+    background: rgba(255, 255, 255, .55);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, .35);
+    border: 1px solid rgba(255, 255, 255, .75);
     border-radius: 999px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65), 0 6px 20px rgba(80, 90, 160, .12);
+    color: #1d1d1f;
+    opacity: 1;
 }
+#menu-overlay .menu-link:hover { color: #0071e3; }
+#menu-overlay .menu-link:active { background: rgba(0, 113, 227, .14); }
+[data-theme="dark"] #menu-overlay {
+    background: linear-gradient(155deg, rgba(28, 28, 46, .88), rgba(46, 38, 92, .84) 55%, rgba(24, 26, 48, .90));
+}
+[data-theme="dark"] #menu-overlay .menu-link {
+    background: rgba(255, 255, 255, .13);
+    border-color: rgba(255, 255, 255, .28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 6px 20px rgba(0, 0, 0, .30);
+    color: #f5f5f7;
+}
+[data-theme="dark"] #menu-overlay .menu-link:hover { color: #7dc4ff; }
 
 /* ---------- 页脚：玻璃条 ---------- */
 .site-footer {
