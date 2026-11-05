@@ -43,16 +43,16 @@
 /* ---------- 3) 主页加宽（仅 ≥768px，手机端保持原样） ---------- */
 /* 只作用于带朋友圈信息流的主页（:has(.moments-feed)），文章页维持原阅读宽度 */
 @media (min-width: 768px) {
-    .main-wrapper:has(.moments-feed) { max-width: 800px; }
-    .main-wrapper:has(.moments-feed) .moments-header { height: 264px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) { max-width: 800px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) .moments-header { height: 264px; }
 }
 @media (min-width: 1024px) {
-    .main-wrapper:has(.moments-feed) { max-width: 880px; }
-    .main-wrapper:has(.moments-feed) .moments-header { height: 300px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) { max-width: 880px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) .moments-header { height: 300px; }
 }
 @media (min-width: 1680px) {
-    .main-wrapper:has(.moments-feed) { max-width: 960px; }
-    .main-wrapper:has(.moments-feed) .moments-header { height: 330px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) { max-width: 960px; }
+    .main-wrapper:has(.moments-feed:not(.single-view)) .moments-header { height: 330px; }
 }
 
 /* ---------- 两侧玻璃面板（主页与文章页、仅 ≥1440px 由 JS 注入并显示） ---------- */
