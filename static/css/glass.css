@@ -207,3 +207,10 @@ body::before {
     [data-theme="dark"] .header-signature,
     [data-theme="dark"] .site-footer { background: rgba(30, 30, 36, .92); }
 }
+
+/* B站嵌入：手机端信息流里全宽展示，避免播放器被主题的 85% 宽度上限压窄（B站播放器一窄，进度条等控件会挤到画面中间） */
+@media (max-width: 820px) {
+  .moments-feed .moment-text.has-video .amigo-video-container.amigo-video-bilibili {
+    max-width: 100%;
+  }
+}
