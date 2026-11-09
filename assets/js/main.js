@@ -2173,6 +2173,7 @@ function initBilibiliFacades() {
             if (!src) return;
             var iframe = document.createElement('iframe');
             iframe.src = src;
+            iframe.title = container.getAttribute('aria-label') || '视频播放器';
             iframe.setAttribute('scrolling', 'no');
             iframe.setAttribute('frameborder', 'no');
             iframe.setAttribute('allowfullscreen', 'true');

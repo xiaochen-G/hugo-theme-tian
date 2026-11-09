@@ -16,7 +16,7 @@
 
                 <div class="archive-author-card" id="archive-author-card" style="background-image: url('{{ .Site.Params.cover | default ( "images/cover.jpg" | relURL ) }}');">
                     <div class="archive-author-avatar">
-                        <img src="" alt="">
+                        <img src="{{ .Site.Params.avatar | default ( "images/avatar.jpg" | relURL ) }}" alt="作者头像">
                     </div>
                     <div class="archive-author-info">
                         <div class="archive-author-name"></div>
