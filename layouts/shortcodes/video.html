@@ -23,17 +23,19 @@
   {{- else if $aid -}}
     {{- $embedSrc = printf "https://player.bilibili.com/player.html?aid=%s&page=%s&autoplay=0" $aid $page -}}
   {{- end -}}
-  <div class="amigo-video-container amigo-video-bilibili" style="aspect-ratio: {{ $ratio | safeCSS }};">
-      <iframe
-          src="{{ $embedSrc }}"
-          scrolling="no"
-          border="0"
-          frameborder="no"
-          framespacing="0"
-          allowfullscreen="true"
-          loading="lazy"
-          aria-label="{{ $alt }}"
-      ></iframe>
+  {{- $playSrc := replace $embedSrc "autoplay=0" "autoplay=1" -}}
+  {{- if and $poster (not (findRE "^(https?://|/)" $poster)) -}}
+    {{- with .Page.Resources.GetMatch $poster -}}
+      {{- $poster = .RelPermalink -}}
+    {{- end -}}
+  {{- end -}}
+  <div class="amigo-video-container amigo-video-bilibili amigo-video-facade" style="aspect-ratio: {{ $ratio | safeCSS }};" data-embed-src="{{ $playSrc }}" role="button" tabindex="0" aria-label="播放视频{{ if $alt }}：{{ $alt }}{{ end }}">
+      {{ if $poster }}<img class="amigo-video-facade-img" src="{{ $poster }}" alt="{{ $alt }}" loading="lazy">{{ end }}
+      <div class="amigo-video-facade-ui">
+          <span class="amigo-video-facade-play"><i class="ri-play-fill"></i></span>
+          {{ if $alt }}<span class="amigo-video-facade-title">{{ $alt }}</span>{{ end }}
+          <span class="amigo-video-facade-badge">哔哩哔哩</span>
+      </div>
   </div>
 {{- else -}}
   {{/* 普通视频 */}}

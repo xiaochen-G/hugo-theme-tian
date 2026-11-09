@@ -44,8 +44,8 @@
 
     /* 文字颜色 */
     --text-main: #333333;
-    --text-desc: #777777;
-    --text-muted: #999999;
+    --text-desc: #6b6b6b;
+    --text-muted: #7a7a7a;
     --text-link: #576b95;
     --text-white: #ffffff;
     --text-on-cover: #ffffff;
@@ -82,8 +82,8 @@
     --bg-mask: rgba(0, 0, 0, 0.9);
 
     --text-main: #e0e0e0;
-    --text-desc: #a0a0a0;
-    --text-muted: #777777;
+    --text-desc: #ababab;
+    --text-muted: #8f8f8f;
     --text-link: #7a95cc;
     --text-quote: #999999;
 
@@ -1369,6 +1369,7 @@ body:has(.view-image) .single-header {
 }
 
 .long-card-title {
+    margin: 0;
     font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
@@ -3342,6 +3343,75 @@ body {
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* B 站视频门面：点击后才加载播放器 iframe */
+.amigo-video-facade {
+    cursor: pointer;
+    background: #181818;
+}
+
+.amigo-video-facade-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.amigo-video-facade-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.45));
+}
+
+.amigo-video-facade-play {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: #181818;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.amigo-video-facade:hover .amigo-video-facade-play {
+    background: #ffffff;
+}
+
+.amigo-video-facade-title {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    right: 12px;
+    color: #ffffff;
+    font-size: 14px;
+    text-align: left;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.amigo-video-facade-badge {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.45);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
 }
 
 .amigo-video {

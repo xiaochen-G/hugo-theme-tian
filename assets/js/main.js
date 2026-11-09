@@ -113,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
     initMusicCardPlayers();
     initMotionPhotos();
     initVideoPlayers();
+    initBilibiliFacades();
     initVoiceMessages();
 });
 
@@ -146,6 +147,7 @@ document.addEventListener("pjax:complete", function() {
     initLivePhotoCards();
     initMotionPhotos();
     initVideoPlayers();
+    initBilibiliFacades();
     initVoiceMessages();
     // 音乐播放器：如果正在播放则只关联 UI，不重新初始化
     if (AudioManager.isPlaying) {
@@ -2161,6 +2163,35 @@ function attachPlayingMusicPlayer() {
 /* ==========================================================================
    视频播放器功能 (video shortcode)
    ========================================================================== */
+
+function initBilibiliFacades() {
+    document.querySelectorAll('.amigo-video-facade').forEach(function (container) {
+        if (container.dataset.facadeInit) return;
+        container.dataset.facadeInit = 'true';
+        var activate = function () {
+            var src = container.getAttribute('data-embed-src');
+            if (!src) return;
+            var iframe = document.createElement('iframe');
+            iframe.src = src;
+            iframe.setAttribute('scrolling', 'no');
+            iframe.setAttribute('frameborder', 'no');
+            iframe.setAttribute('allowfullscreen', 'true');
+            iframe.setAttribute('allow', 'autoplay; fullscreen');
+            container.innerHTML = '';
+            container.appendChild(iframe);
+            container.classList.remove('amigo-video-facade');
+            container.removeAttribute('role');
+            container.removeAttribute('tabindex');
+        };
+        container.addEventListener('click', activate);
+        container.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                activate();
+            }
+        });
+    });
+}
 
 function initVideoPlayers() {
     document.querySelectorAll('.amigo-video-container:not(.amigo-video-bilibili)').forEach(container => {

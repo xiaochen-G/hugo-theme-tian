@@ -106,14 +106,14 @@
         <!-- 首页的页眉（带菜单按钮） -->
         {{ if .IsHome }}
         <header class="home-header">
-            <button id="menu-toggle" aria-label="Menu" title="菜单">
+            <button id="menu-toggle" aria-label="打开菜单" title="菜单">
                 <i class="ri-menu-line"></i>
             </button>
             <div class="header-center">
                 {{ if ne .Site.Params.enableSearch false }}
                 <div class="header-search">
                     <i class="ri-search-line"></i>
-                    <input type="text" id="home-search-input" placeholder="搜索">
+                    <input type="text" id="home-search-input" placeholder="搜索" aria-label="搜索文章">
                     <button id="home-search-clear" class="nav-btn" aria-label="清除">
                         <i class="ri-close-line"></i>
                     </button>
@@ -121,11 +121,11 @@
                 {{ end }}
             </div>
             <div class="header-actions">
-                <button class="nav-btn btn-back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
+                <button class="nav-btn btn-back-to-top" aria-label="回到顶部" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
                     <i class="ri-arrow-up-line"></i>
                 </button>
                 {{ if ne .Site.Params.enableDarkMode false }}
-                <button class="nav-btn theme-toggle" title="切换模式">
+                <button class="nav-btn theme-toggle" title="切换模式" aria-label="切换深色模式">
                     <i class="ri-sun-line light-icon"></i>
                     <i class="ri-moon-line dark-icon"></i>
                 </button>

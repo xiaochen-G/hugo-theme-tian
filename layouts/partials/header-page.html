@@ -1,15 +1,15 @@
 <header class="single-header">
     <div class="header-inner">
-        <a href="{{ .Site.Home.RelPermalink }}" class="nav-btn back-home" title="返回">
+        <a href="{{ .Site.Home.RelPermalink }}" class="nav-btn back-home" title="返回" aria-label="返回首页">
             <i class="ri-arrow-left-s-line"></i>
         </a>
         <!-- <div class="header-title">{{ .Title }}</div> -->
         <div class="header-title"></div>
         <div class="header-actions">
-            <button class="nav-btn btn-back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
+            <button class="nav-btn btn-back-to-top" aria-label="回到顶部" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">
                 <i class="ri-arrow-up-line"></i>
             </button>
-            <button class="nav-btn theme-toggle" title="切换模式">
+            <button class="nav-btn theme-toggle" title="切换模式" aria-label="切换深色模式">
                 <i class="ri-sun-line light-icon"></i>
                 <i class="ri-moon-line dark-icon"></i>
             </button>

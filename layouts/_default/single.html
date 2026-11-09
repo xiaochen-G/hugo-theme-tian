@@ -62,7 +62,7 @@
                                         {{ $imgSrc = .RelPermalink }}
                                     {{ end }}
                                 {{ end }}
-                                <img src="{{ $imgSrc }}" alt="Image" loading="lazy">
+                                <img src="{{ $imgSrc }}" alt="{{ $currentPage.Title }}" loading="lazy">
                             {{ end }}
                         </div>
                     {{ else }}
@@ -76,7 +76,7 @@
                                     {{ end }}
                                 {{ end }}
                                 <div class="gallery-item">
-                                    <img src="{{ $imgSrc }}" alt="Image" loading="lazy">
+                                    <img src="{{ $imgSrc }}" alt="{{ $currentPage.Title }}" loading="lazy">
                                 </div>
                             {{ end }}
                         </div>
